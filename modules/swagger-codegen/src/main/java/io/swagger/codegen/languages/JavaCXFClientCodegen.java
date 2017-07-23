@@ -11,20 +11,17 @@ import org.slf4j.LoggerFactory;
 import io.swagger.codegen.CliOption;
 import io.swagger.codegen.CodegenModel;
 import io.swagger.codegen.CodegenOperation;
-import io.swagger.codegen.CodegenParameter;
 import io.swagger.codegen.CodegenProperty;
-import io.swagger.codegen.CodegenResponse;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.SupportingFile;
 import io.swagger.codegen.languages.features.BeanValidationFeatures;
 import io.swagger.codegen.languages.features.GzipTestFeatures;
-import io.swagger.codegen.languages.features.JaxbFeatures;
 import io.swagger.codegen.languages.features.LoggingTestFeatures;
 import io.swagger.codegen.languages.features.UseGenericResponseFeatures;
 import io.swagger.models.Operation;
 
 public class JavaCXFClientCodegen extends AbstractJavaCodegen
-        implements BeanValidationFeatures, UseGenericResponseFeatures, JaxbFeatures, GzipTestFeatures, LoggingTestFeatures {
+        implements BeanValidationFeatures, UseGenericResponseFeatures, GzipTestFeatures, LoggingTestFeatures {
 
 private static final Logger LOGGER = LoggerFactory.getLogger(JavaCXFClientCodegen.class);
 
@@ -34,10 +31,10 @@ private static final Logger LOGGER = LoggerFactory.getLogger(JavaCXFClientCodege
      */
     protected static final String JAXRS_TEMPLATE_DIRECTORY_NAME = "JavaJaxRS";
 
-    protected boolean useJaxbAnnotations = true;
+    protected boolean withXml = true;
 
     protected boolean useBeanValidation = false;
-    
+
     protected boolean useGenericResponse = false;
 
     protected boolean useGzipFeatureForTests = false;
@@ -73,7 +70,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(JavaCXFClientCodege
 
         embeddedTemplateDir = templateDir = JAXRS_TEMPLATE_DIRECTORY_NAME + File.separator + "cxf";
 
-        cliOptions.add(CliOption.newBoolean(USE_JAXB_ANNOTATIONS, "Use JAXB annotations for XML"));
+        cliOptions.add(CliOption.newBoolean(WITH_XML, "Use XML annotations"));
 
         cliOptions.add(CliOption.newBoolean(USE_BEANVALIDATION, "Use BeanValidation API annotations"));
 
@@ -89,16 +86,16 @@ private static final Logger LOGGER = LoggerFactory.getLogger(JavaCXFClientCodege
     {
         super.processOpts();
 
-        if (additionalProperties.containsKey(USE_JAXB_ANNOTATIONS)) {
-            boolean useJaxbAnnotationsProp = convertPropertyToBooleanAndWriteBack(USE_JAXB_ANNOTATIONS);
-            this.setUseJaxbAnnotations(useJaxbAnnotationsProp);
+        if (additionalProperties.containsKey(WITH_XML)) {
+            boolean withXmlProp = convertPropertyToBooleanAndWriteBack(WITH_XML);
+            this.setWithXml(withXmlProp);
         }
 
         if (additionalProperties.containsKey(USE_BEANVALIDATION)) {
             boolean useBeanValidationProp = convertPropertyToBooleanAndWriteBack(USE_BEANVALIDATION);
             this.setUseBeanValidation(useBeanValidationProp);
         }
-        
+
         if (additionalProperties.containsKey(USE_GENERIC_RESPONSE)) {
             this.setUseGenericResponse(convertPropertyToBoolean(USE_GENERIC_RESPONSE));
         }
@@ -178,8 +175,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(JavaCXFClientCodege
     }
 
 
-    public void setUseJaxbAnnotations(boolean useJaxbAnnotations) {
-        this.useJaxbAnnotations = useJaxbAnnotations;
+    public void setWithXml(boolean withXml) {
+        this.withXml = withXml;
     }
 
     public void setUseGzipFeatureForTests(boolean useGzipFeatureForTests) {

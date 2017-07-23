@@ -15,36 +15,35 @@ import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.SupportingFile;
 import io.swagger.codegen.languages.features.CXFServerFeatures;
 import io.swagger.codegen.languages.features.GzipTestFeatures;
-import io.swagger.codegen.languages.features.JaxbFeatures;
 import io.swagger.codegen.languages.features.LoggingTestFeatures;
 import io.swagger.codegen.languages.features.UseGenericResponseFeatures;
 import io.swagger.models.Operation;
 
 public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
-        implements CXFServerFeatures, GzipTestFeatures, LoggingTestFeatures, JaxbFeatures, UseGenericResponseFeatures
-{   
+        implements CXFServerFeatures, GzipTestFeatures, LoggingTestFeatures, UseGenericResponseFeatures
+{
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaCXFServerCodegen.class);
-    
+
     protected boolean addConsumesProducesJson = true;
 
-    protected boolean useJaxbAnnotations = true;
-    
+    protected boolean withXml = true;
+
     protected boolean generateSpringApplication = false;
-    
+
     protected boolean useSpringAnnotationConfig = false;
 
     protected boolean useSwaggerFeature = false;
-    
+
     protected boolean useSwaggerUI = false;
 
     protected boolean useWadlFeature = false;
-    
+
     protected boolean useMultipartFeature = false;
 
     protected boolean useBeanValidationFeature = false;
-    
+
     protected boolean generateSpringBootApplication= false;
-    
+
     protected boolean generateJbossDeploymentDescriptor = false;
 
     protected boolean useGzipFeature = false;
@@ -66,13 +65,13 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
         super();
 
         supportsInheritance = true;
-        
+
         artifactId = "swagger-cxf-server";
-        
+
         outputFolder = "generated-code/JavaJaxRS-CXF";
-        
+
         apiTemplateFiles.put("apiServiceImpl.mustache", ".java");
-        
+
         // clear model and api doc template as this codegen
         // does not support auto-generated markdown doc at the moment
         //TODO: add doc templates
@@ -86,11 +85,11 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
 
         embeddedTemplateDir = templateDir = JAXRS_TEMPLATE_DIRECTORY_NAME + File.separator + "cxf";
 
-        cliOptions.add(CliOption.newBoolean(USE_JAXB_ANNOTATIONS, "Use JAXB annotations for XML"));
+        cliOptions.add(CliOption.newBoolean(WITH_XML, "Use XML annotations"));
 
         cliOptions.add(CliOption.newBoolean(GENERATE_SPRING_APPLICATION, "Generate Spring application"));
         cliOptions.add(CliOption.newBoolean(USE_SPRING_ANNOTATION_CONFIG, "Use Spring Annotation Config"));
-        
+
         cliOptions.add(CliOption.newBoolean(USE_SWAGGER_FEATURE, "Use Swagger Feature"));
         cliOptions.add(CliOption.newBoolean(USE_SWAGGER_UI, "Use Swagger UI"));
 
@@ -103,14 +102,14 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
         cliOptions.add(CliOption.newBoolean(USE_BEANVALIDATION_FEATURE, "Use BeanValidation Feature"));
         cliOptions.add(CliOption.newBoolean(USE_LOGGING_FEATURE, "Use Logging Feature"));
         cliOptions.add(CliOption.newBoolean(USE_LOGGING_FEATURE_FOR_TESTS, "Use Logging Feature for tests"));
-        
+
         cliOptions.add(CliOption.newBoolean(GENERATE_SPRING_BOOT_APPLICATION, "Generate Spring Boot application"));
         cliOptions.add(
                 CliOption.newBoolean(GENERATE_JBOSS_DEPLOYMENT_DESCRIPTOR, "Generate Jboss Deployment Descriptor"));
-        
+
         cliOptions
                 .add(CliOption.newBoolean(ADD_CONSUMES_PRODUCES_JSON, "Add @Consumes/@Produces Json to API interface"));
-        
+
         cliOptions.add(CliOption.newBoolean(USE_ANNOTATED_BASE_PATH, "Use @Path annotations for basePath"));
 
         cliOptions.add(CliOption.newBoolean(GENERATE_NON_SPRING_APPLICATION, "Generate non-Spring application"));
@@ -123,16 +122,16 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
     public void processOpts()
     {
         super.processOpts();
-        
-        if (additionalProperties.containsKey(USE_JAXB_ANNOTATIONS)) {
-            boolean useJaxbAnnotationsProp = convertPropertyToBooleanAndWriteBack(USE_JAXB_ANNOTATIONS);
-            this.setUseJaxbAnnotations(useJaxbAnnotationsProp);
+
+        if (additionalProperties.containsKey(WITH_XML)) {
+            boolean withXmlProp = convertPropertyToBooleanAndWriteBack(WITH_XML);
+            this.setWithXml(withXmlProp);
         }
-        
+
         if (additionalProperties.containsKey(ADD_CONSUMES_PRODUCES_JSON)) {
             this.setAddConsumesProducesJson(convertPropertyToBooleanAndWriteBack(ADD_CONSUMES_PRODUCES_JSON));
         }
-        
+
         if (additionalProperties.containsKey(USE_GENERIC_RESPONSE)) {
             this.setUseGenericResponse(convertPropertyToBoolean(USE_GENERIC_RESPONSE));
         }
@@ -143,7 +142,7 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
 
         if (additionalProperties.containsKey(GENERATE_SPRING_APPLICATION)) {
             this.setGenerateSpringApplication(convertPropertyToBooleanAndWriteBack(GENERATE_SPRING_APPLICATION));
-            
+
             this.setUseSwaggerFeature(convertPropertyToBooleanAndWriteBack(USE_SWAGGER_FEATURE));
             this.setUseSwaggerUI(convertPropertyToBooleanAndWriteBack(USE_SWAGGER_UI));
 
@@ -154,16 +153,16 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
             this.setUseLoggingFeature(convertPropertyToBooleanAndWriteBack(USE_LOGGING_FEATURE));
             this.setUseLoggingFeatureForTests(convertPropertyToBooleanAndWriteBack(USE_LOGGING_FEATURE_FOR_TESTS));
             this.setUseSpringAnnotationConfig(convertPropertyToBooleanAndWriteBack(USE_SPRING_ANNOTATION_CONFIG));
-            
+
             boolean useBeanValidationFeature = convertPropertyToBooleanAndWriteBack(USE_BEANVALIDATION_FEATURE);
             this.setUseBeanValidationFeature(useBeanValidationFeature);
             if (useBeanValidationFeature) {
                 LOGGER.info("make sure your target server supports Bean Validation 1.1");
             }
-            
+
             this.setGenerateSpringBootApplication(convertPropertyToBooleanAndWriteBack(GENERATE_SPRING_BOOT_APPLICATION));
         }
-       
+
         if (additionalProperties.containsKey(GENERATE_JBOSS_DEPLOYMENT_DESCRIPTOR)) {
             boolean generateJbossDeploymentDescriptorProp = convertPropertyToBooleanAndWriteBack(
                     GENERATE_JBOSS_DEPLOYMENT_DESCRIPTOR);
@@ -181,29 +180,29 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
         }
 
         supportingFiles.clear(); // Don't need extra files provided by AbstractJAX-RS & Java Codegen
-        
+
         writeOptional(outputFolder, new SupportingFile("server/pom.mustache", "", "pom.xml"));
-        
+
         writeOptional(outputFolder,
                 new SupportingFile("server/swagger-codegen-ignore.mustache", "", ".swagger-codegen-ignore"));
 
         if (this.generateSpringApplication) {
             writeOptional(outputFolder, new SupportingFile("server/readme.md", "", "readme.md"));
-            
+
             writeOptional(outputFolder, new SupportingFile("server/ApplicationContext.xml.mustache",
                     ("src/main/resources"), "ApplicationContext.xml"));
             writeOptional(outputFolder, new SupportingFile("server/web.mustache",
                     ("src/main/webapp/WEB-INF"), "web.xml"));
             writeOptional(outputFolder, new SupportingFile("server/context.xml.mustache",
                     ("src/main/webapp/WEB-INF"), "context.xml"));
-            
+
             // Jboss
             if (generateJbossDeploymentDescriptor) {
                 writeOptional(outputFolder, new SupportingFile("server/jboss-web.xml.mustache",
                         ("src/main/webapp/WEB-INF"), "jboss-web.xml"));
 
             }
-            
+
             // Spring Boot
             if (this.generateSpringBootApplication) {
                 writeOptional(outputFolder, new SupportingFile("server/SpringBootApplication.mustache",
@@ -213,13 +212,13 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
 
             }
         }
-        
+
         if (this.generateNonSpringApplication) {
             writeOptional(outputFolder, new SupportingFile("server/nonspring-web.mustache",
                     ("src/main/webapp/WEB-INF"), "web.xml"));
         }
     }
-    
+
     @Override
     public String getName()
     {
@@ -228,10 +227,10 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
 
     @Override
     public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
-        super.addOperationToGroup(tag, resourcePath, operation, co, operations);        
+        super.addOperationToGroup(tag, resourcePath, operation, co, operations);
         co.subresourceOperation = !co.path.isEmpty();
     }
-    
+
     @Override
     public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
         super.postProcessModelProperty(model, property);
@@ -240,13 +239,13 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
         model.imports.remove("JsonSerialize");
         model.imports.remove("ToStringSerializer");
     }
-    
+
     @Override
     public String getHelp()
     {
         return "Generates a Java JAXRS Server application based on Apache CXF framework.";
     }
-    
+
     public void setGenerateSpringApplication(boolean generateSpringApplication) {
         this.generateSpringApplication = generateSpringApplication;
     }
@@ -283,13 +282,13 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
     public void setUseBeanValidationFeature(boolean useBeanValidationFeature) {
         this.useBeanValidationFeature = useBeanValidationFeature;
     }
-    
+
     public void setGenerateSpringBootApplication(boolean generateSpringBootApplication) {
         this.generateSpringBootApplication = generateSpringBootApplication;
     }
 
-    public void setUseJaxbAnnotations(boolean useJaxbAnnotations) {
-        this.useJaxbAnnotations = useJaxbAnnotations;
+    public void setWithXml(boolean withXml) {
+        this.withXml = withXml;
     }
 
     public void setGenerateJbossDeploymentDescriptor(boolean generateJbossDeploymentDescriptor) {
@@ -319,7 +318,7 @@ public class JavaCXFServerCodegen extends AbstractJavaJAXRSServerCodegen
     public void setGenerateNonSpringApplication(boolean generateNonSpringApplication) {
         this.generateNonSpringApplication = generateNonSpringApplication;
     }
-    
+
     public void setUseGenericResponse(boolean useGenericResponse) {
         this.useGenericResponse = useGenericResponse;
     }
